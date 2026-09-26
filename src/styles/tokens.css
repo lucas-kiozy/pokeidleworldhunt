@@ -1,0 +1,37 @@
+/* Design tokens — paleta oficial do Poke Idle World Hunter.
+   Ver memória "poke-idle-color-palette": não trocar sem pedido explícito do usuário. */
+:root {
+  /* Paleta de marca (fonte da verdade) */
+  --color-primary: #2563eb; /* Azul Pokémon — header, navegação, botões principais */
+  --color-secondary: #ffd21f; /* Amarelo Elétrico — destaques, CTAs, ícones */
+  --color-accent: #ef3340; /* Vermelho Poké Ball — ações importantes, badges, alertas */
+  --color-bg: #101827; /* Azul-noite — fundo geral do site */
+  --color-bg-alt: #172554; /* Azul profundo — cards, seções, menus */
+  --color-text: #f8fafc; /* Branco — títulos e textos importantes */
+  --color-text-muted: #94a3b8; /* Cinza azulado — descrições e info auxiliar */
+  --color-success: #22c55e; /* Verde — capturado, disponível, evolução */
+  --color-water-ice: #38bdf8; /* Ciano — tipos Água/Gelo */
+
+  /* Papéis funcionais usados pelo layout legado, mapeados para a paleta acima */
+  --bg: var(--color-bg);
+  --panel: var(--color-bg-alt);
+  --panel2: color-mix(in srgb, var(--color-bg-alt) 82%, var(--color-bg) 18%);
+  --ink: var(--color-text);
+  --muted: var(--color-text-muted);
+  --line: color-mix(in srgb, var(--color-text-muted) 35%, var(--color-bg-alt) 65%);
+
+  --red: var(--color-accent);
+  --red-ink: var(--color-text);
+  --teal: var(--color-water-ice);
+  --good: var(--color-success);
+  --bad: var(--color-accent);
+  --warn: var(--color-secondary);
+
+  --radius-lg: 14px;
+  --radius: 8px;
+  --head: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* Tema desta paleta é escuro por natureza — mantido fixo por padrão.
+   Se quiser alternância clara/escura no futuro, é uma decisão de design a confirmar. */

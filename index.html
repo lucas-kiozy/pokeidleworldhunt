@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Planejador de hunt · Poke Idle World</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <div>
+          <h1>Planejador de hunt</h1>
+          <p class="sub">
+            Escolha um pokémon do seu time e veja quais hunts rendem mais XP por hora sem afundar
+            seu saldo. As estimativas se ajustam às sessões do Hunt Analyzer que você registrar.
+          </p>
+        </div>
+        <div class="src">
+          Base do jogo (<a
+            href="https://poke.idleworld.online/pokepedia"
+            target="_blank"
+            rel="noopener"
+            >Pokepedia</a
+          >): <span id="baseInfo"></span> ·
+          <span id="saveStatus" class="status">salvo neste navegador</span>
+        </div>
+      </header>
+
+      <nav class="apptabs" id="apptabs" aria-label="Seções do app">
+        <button type="button" class="tab-btn" data-tab="hunt" aria-pressed="true">
+          Hunt solta
+        </button>
+        <button type="button" class="tab-btn" data-tab="time" aria-pressed="false">Time</button>
+        <button type="button" class="tab-btn" data-tab="captura" aria-pressed="false">
+          Captura
+        </button>
+        <button type="button" class="tab-btn" data-tab="guia" aria-pressed="false">Guia</button>
+      </nav>
+
+      <section id="tabpanel-time" class="tabpanel" hidden>
+        <nav class="team" id="team" aria-label="Seu time" hidden></nav>
+        <section id="welcome" hidden></section>
+
+        <div class="grid" id="main" hidden>
+          <div class="side">
+            <section class="panel" id="monPanel"></section>
+            <section class="panel" id="sessPanel"></section>
+          </div>
+
+          <section class="results">
+            <div class="panel" id="resultsBody">
+              <h2>Melhores rotas para <span id="resName"></span></h2>
+              <p class="hint" id="resHint"></p>
+              <div class="controls">
+                <div class="slider-row">
+                  <label class="f" for="w">Peso do dinheiro na escolha: <b id="wVal"></b></label>
+                  <input type="range" id="w" min="0" max="100" step="5" />
+                  <div class="scale">
+                    <span>Só XP</span><span>Equilíbrio</span><span>Só dinheiro</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="f" for="trainerLv">Nível do treinador</label>
+                  <input type="number" id="trainerLv" min="1" placeholder="sem limite" />
+                </div>
+                <div>
+                  <label class="f" for="healThreshold">Auto-Potion cura com HP ≤</label>
+                  <select id="healThreshold">
+                    <option value="25">25%</option>
+                    <option value="40">40%</option>
+                    <option value="50">50%</option>
+                    <option value="60">60%</option>
+                    <option value="75">75%</option>
+                    <option value="90">90%</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="f" for="potion">Poção deste pokémon (para registrar sessões)</label>
+                  <select id="potion"></select>
+                </div>
+                <div>
+                  <label class="f" for="dailyType">Tipo do Dia (+20% XP e loot nesse tipo)</label>
+                  <select id="dailyType"></select>
+                </div>
+                <div class="checks">
+                  <label
+                    ><input type="checkbox" id="stones" /> Contar pedras de evolução no loot
+                    (desligado: você guarda as pedras)</label
+                  >
+                  <label><input type="checkbox" id="vip" /> VIP ativo (+50% XP)</label>
+                  <label
+                    ><input type="checkbox" id="event2x" /> Evento "XP em Dobro" ativo (×2)</label
+                  >
+                  <label><input type="checkbox" id="map_orre" /> Incluir Orre (nível 500)</label>
+                  <label
+                    ><input type="checkbox" id="map_nightmare" /> Incluir Nightmare (nível
+                    2000)</label
+                  >
+                </div>
+              </div>
+              <div id="pick"></div>
+              <div class="tablewrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Hunt</th>
+                      <th>Nível</th>
+                      <th>Ataque / recebe</th>
+                      <th>Kills/h</th>
+                      <th>XP/h</th>
+                      <th>Saldo/h</th>
+                      <th>Até a meta</th>
+                      <th>Poção</th>
+                      <th>Poções/h</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="tabpanel-hunt" class="tabpanel">
+        <div class="panel">
+          <h2>Hunt solta</h2>
+          <p class="hint">
+            Veja as melhores hunts para qualquer pokémon, sem adicionar ele ao time nem salvar nada.
+            Usa a mesma calibração do seu time salvo (aba Time), se houver sessões registradas —
+            senão usa os valores de partida.
+          </p>
+          <label class="f" for="qSpecies">Espécie (seu pokémon)</label>
+          <input
+            type="text"
+            id="qSpecies"
+            list="speciesList"
+            autocomplete="off"
+            placeholder="ex.: Dragonite"
+          />
+          <div class="row3">
+            <div>
+              <label class="f" for="qLevel">Nível</label>
+              <input type="number" id="qLevel" min="1" placeholder="ex.: 100" />
+            </div>
+            <div>
+              <label class="f" for="qQ">Qualidade</label>
+              <input type="number" id="qQ" min="0.8" max="5" step="0.01" placeholder="1,00" />
+            </div>
+            <div>
+              <label class="f" for="qIvt">IV total (6 a 192)</label>
+              <input type="number" id="qIvt" min="6" max="192" placeholder="96" />
+            </div>
+          </div>
+          <details id="qStatsDetails">
+            <summary>Stats reais da ficha (opcional)</summary>
+            <p class="hint">
+              Sem eles, o app usa a média pela espécie, nível, qualidade e IV total acima.
+            </p>
+            <div class="row3 stats" id="qStatsRow"></div>
+          </details>
+          <p class="hint" id="qErr" role="alert" style="color: var(--bad)"></p>
+          <div class="actions">
+            <button class="btn primary" id="qCalc">Ver melhores hunts</button>
+          </div>
+        </div>
+
+        <div class="panel" id="qResultsPanel" hidden style="margin-top: 16px">
+          <h2>Melhores rotas para <span id="qResName"></span></h2>
+          <p class="hint" id="qResHint"></p>
+          <div class="controls">
+            <div class="slider-row">
+              <label class="f" for="qw">Peso do dinheiro na escolha: <b id="qwVal"></b></label>
+              <input type="range" id="qw" min="0" max="100" step="5" />
+              <div class="scale">
+                <span>Só XP</span><span>Equilíbrio</span><span>Só dinheiro</span>
+              </div>
+            </div>
+            <div>
+              <label class="f" for="qTrainerLv">Nível do treinador</label>
+              <input type="number" id="qTrainerLv" min="1" placeholder="sem limite" />
+            </div>
+            <div>
+              <label class="f" for="qHealThreshold">Auto-Potion cura com HP ≤</label>
+              <select id="qHealThreshold">
+                <option value="25">25%</option>
+                <option value="40">40%</option>
+                <option value="50">50%</option>
+                <option value="60">60%</option>
+                <option value="75">75%</option>
+                <option value="90">90%</option>
+              </select>
+            </div>
+            <div>
+              <label class="f" for="qDailyType">Tipo do Dia (+20% XP e loot nesse tipo)</label>
+              <select id="qDailyType"></select>
+            </div>
+            <div class="checks">
+              <label
+                ><input type="checkbox" id="qStones" /> Contar pedras de evolução no loot
+                (desligado: você guarda as pedras)</label
+              >
+              <label><input type="checkbox" id="qVip" /> VIP ativo (+50% XP)</label>
+              <label><input type="checkbox" id="qEvent2x" /> Evento "XP em Dobro" ativo (×2)</label>
+              <label><input type="checkbox" id="qMapOrre" /> Incluir Orre (nível 500)</label>
+              <label
+                ><input type="checkbox" id="qMapNightmare" /> Incluir Nightmare (nível 2000)</label
+              >
+            </div>
+          </div>
+          <p class="hint">
+            Essas configurações são as mesmas da aba Time — mudar aqui também muda lá, porque são
+            fatos sobre a sua conta agora (VIP, evento, tipo do dia), não sobre o pokémon.
+          </p>
+          <div id="qPick"></div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Hunt</th>
+                  <th>Nível</th>
+                  <th>Ataque / recebe</th>
+                  <th>Kills/h</th>
+                  <th>XP/h</th>
+                  <th>Saldo/h</th>
+                  <th>Até a meta</th>
+                  <th>Poção</th>
+                  <th>Poções/h</th>
+                </tr>
+              </thead>
+              <tbody id="qRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tabpanel-captura" class="tabpanel" hidden>
+        <section class="panel" id="capPanel"></section>
+      </section>
+
+      <section id="tabpanel-guia" class="tabpanel" hidden>
+        <div class="panel foot">
+          <p>
+            <b>Como a estimativa funciona.</b> Só entram hunts até o nível do treinador, que é o que
+            o jogo usa para liberar cada hunt. Cada kill leva um tempo fixo (spawn e deslocamento)
+            mais o tempo de luta. Cada selvagem é derrotado um por vez, mas os outros vão chegando
+            enquanto a luta dura: o modelo começa com 1 atacante e soma mais um a cada 10 s, até 3.
+            Por isso lutas curtas quase não gastam poção e lutas longas gastam muito. A luta usa os
+            stats que você copiar da ficha (ou a média pela espécie, nível, qualidade e IV total),
+            os do selvagem no nível da hunt, os golpes de cada lado com poder e recarga, e a
+            vantagem de tipo amplificada da hunt (×2 vira ×2,5; ×0,5 vira ×0,33). Na hunt o selvagem
+            tem 5× o HP e bate 1,8× mais forte. O loot por kill soma chance × quantidade média ×
+            preço do NPC de cada drop, como o Hunt Analyzer faz sem o preço do Mercado. As poções
+            custam o preço fixo da loja, que já vem da base do jogo.
+          </p>
+          <p>
+            <b>Poção recomendada.</b> O campo "Auto-Potion cura com HP ≤" é o gatilho configurado no
+            jogo: abaixo desse HP, cada poção precisa repor a diferença até o máximo. Entre as
+            poções que enchem essa diferença por completo, o app recomenda a mais barata — encher o
+            HP vem antes de economizar, então uma poção que deixa faltando não é escolhida só por
+            custar menos. Se nenhuma poção da base enche o HP de volta ao máximo, aparece
+            <span class="tag x">poção não enche o HP</span> e o app usa a maior disponível. Isso é
+            separado do risco de levar um golpe muito forte de uma vez: se o golpe mais pesado do
+            selvagem sozinho já tira metade do HP em luta ou mais, a hunt entra como
+            <span class="tag d">risco de desmaio</span>, porque entre 100% e o gatilho nada cura —
+            mesmo com a poção certa pode não dar tempo de reagir. Se nem a poção mais forte da base
+            aguenta esse golpe, aparece
+            <span class="tag x">golpe mais forte que qualquer poção</span>. Nenhuma dessas duas tags
+            é uma simulação de verdade — não contam a chance real de desmaiar nem o tempo perdido
+            revivendo, só apontam onde o risco existe.
+          </p>
+          <p>
+            <b>Mapas e espécies não confirmadas.</b> A Pokepedia só marca a área de Orre e
+            Nightmare; para o resto, o app supõe Kanto/Outland quando o nível da hunt é 150 ou
+            menos. Boa parte das espécies da Geração 3 em diante existe na base do jogo em duas
+            versões: uma sem mapa marcado, no nível baixo normal da espécie, e uma marcada em Orre
+            ou Nightmare, num nível bem mais alto. Nos testes (Swampert, Makuhita, Whiscash,
+            Sharpedo), só a versão marcada existia de verdade — a versão sem mapa parece ser um
+            resto de dados que o jogo não usa mais. Por isso o app esconde de partida a versão sem
+            mapa sempre que existe uma versão marcada com o mesmo nome, e mostra só a marcada, atrás
+            do filtro de Orre ou Nightmare. Ficam escondidas também 23 espécies que o próprio
+            Discord do jogo descreveu como "no radar, ainda não implementadas". Ao todo são 147
+            hunts ocultadas por padrão; o botão "Mostrar hunts não confirmadas" traz todas de volta,
+            incluindo as que você mesmo ocultou pelo × ao lado de cada linha.
+          </p>
+          <p>
+            <b>Bosses de Orre.</b> Desde a atualização de 24/09/2026, qualquer selvagem de Orre pode
+            nascer como um dos 12 bosses (nível 600) em vez do selvagem normal, sem horário nem
+            aviso. Como é uma sorte por spawn, e não uma hunt que dá pra escolher, essas 12 espécies
+            não entram no ranking — não têm uma taxa de kills/hora que faça sentido calcular. Os
+            sete itens de evolução de boss (Protector, Magmarizer, Electirizer, Reaper Cloth, Prism
+            Scale, Metal Coat e Gaia Tentacles) e as pedras de shiny também não estão na base ainda.
+          </p>
+          <p>
+            <b>Calibração e validação.</b> O tempo fixo e a escala da luta são ajustados por mínimos
+            quadrados com as sessões de todo o time, porque o mesmo ajuste explicou Venusaur e
+            Golem: nas seis sessões de teste, a previsão de tempo por kill errou menos de 10% em
+            cinco. O loot bateu entre 5% e 20%. XP real vs base e o fator de poção são calibrados
+            por pokémon; o XP é guardado sem o bônus do VIP nem do evento "XP em Dobro" — os dois
+            são reaplicados nas contas atuais conforme as caixas correspondentes estiverem marcadas,
+            então dá pra ligar e desligar sem perder a calibração. O "Tipo do Dia" soma +20% de XP e
+            +20% de loot só nas hunts daquele tipo, do jeito que o jogo aplica; escolha o tipo
+            sorteado no dia antes de olhar o ranking, porque isso pode subir uma hunt de posição. O
+            gasto de poções é a parte menos precisa: mesmo com os atacantes se somando, as previsões
+            ainda erraram até 2× em algumas hunts. Hunts acima do nível do pokémon aparecem como
+            <span class="tag x">acima do pokémon</span>, porque os testes só cobriram alvos abaixo
+            dele. Hunts em que o dano recebido passaria de metade do HP por segundo de luta ficam
+            escondidas como <span class="tag d">perigosa</span>.
+          </p>
+          <p>
+            <b>Bônus da Pokédex.</b> Depois de 100 kills de uma espécie você resgata uma vez 25% de
+            um nível em XP. Alternar entre as rotas do topo até bater 100 kills em cada uma é XP
+            grátis.
+          </p>
+          <p>
+            <b>Captura.</b> Pela explicação oficial no Discord do jogo, cada bola tem chance igual
+            ao preço dela dividido pelo valor do pokémon (o preço de NPC da espécie), e boosts
+            multiplicam essa chance. A Ultra Ball custa $130; o preço das outras bolas fica no
+            servidor, então informe o nome e o que você paga na aba Captura. Shinies usam uma chance
+            fixa por tier que o jogo não publica.
+          </p>
+          <details class="backup" id="backup">
+            <summary>Backup dos seus dados</summary>
+            <p class="hint">
+              Time e sessões ficam só neste navegador. Copie o texto abaixo para levar a outro
+              aparelho, ou cole um backup e restaure.
+            </p>
+            <textarea id="bkText" aria-label="Texto do backup"></textarea>
+            <div class="actions">
+              <button class="btn small" id="bkCopy">Copiar backup</button>
+              <button class="btn small" id="bkLoad">Restaurar backup colado</button>
+            </div>
+            <p class="hint" id="bkMsg" role="status"></p>
+          </details>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
