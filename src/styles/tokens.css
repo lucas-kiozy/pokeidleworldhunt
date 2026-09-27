@@ -5,10 +5,19 @@
   --color-primary: #2563eb; /* Azul Pokémon — header, navegação, botões principais */
   --color-secondary: #ffd21f; /* Amarelo Elétrico — destaques, CTAs, ícones */
   --color-accent: #ef3340; /* Vermelho Poké Ball — ações importantes, badges, alertas */
-  --color-bg: #101827; /* Azul-noite — fundo geral do site */
-  --color-bg-alt: #172554; /* Azul profundo — cards, seções, menus */
+
+  /* Pedido explícito do usuário (2026-09-27): o "Azul-noite" original (#101827) era
+     escuro demais na prática — trocado por um tom bem mais claro na mesma família,
+     mantendo a identidade azulada sem pesar tanto. --color-bg-alt subiu junto pra
+     manter a mesma distância relativa entre fundo e cards. */
+  --color-bg: #1e293b; /* Fundo geral do site */
+  --color-bg-alt: #2a3b5c; /* Cards, seções, menus */
   --color-text: #f8fafc; /* Branco — títulos e textos importantes */
-  --color-text-muted: #94a3b8; /* Cinza azulado — descrições e info auxiliar */
+
+  /* Levemente mais claro que o "cinza azulado" original: com o fundo mais claro
+     pedido pelo usuário, o tom anterior (#94a3b8) caiu pra 4,35:1 — abaixo do
+     4,5:1 do WCAG AA (medido com axe-core). */
+  --color-text-muted: color-mix(in srgb, #94a3b8 80%, white 20%);
   --color-success: #22c55e; /* Verde — capturado, disponível, evolução */
   --color-water-ice: #38bdf8; /* Ciano — tipos Água/Gelo */
 
@@ -40,7 +49,7 @@
      (axe-core): --color-primary puro deu 2,84:1. Clareando com branco o
      texto continua lendo como "azul"/"vermelho", só fica legível. */
   --color-primary-text: color-mix(in srgb, var(--color-primary) 55%, white 45%);
-  --color-accent-text: color-mix(in srgb, var(--color-accent) 55%, white 40%);
+  --color-accent-text: color-mix(in srgb, var(--color-accent) 48%, white 52%);
   --color-success-text: color-mix(in srgb, var(--color-success) 70%, white 30%);
 
   --radius-lg: 14px;

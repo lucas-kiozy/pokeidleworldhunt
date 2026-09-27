@@ -470,7 +470,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tablewrap {
-  overflow-x: auto;
+  /* mesma pegadinha do .apptabs acima: overflow-x sozinho faz overflow-y virar "auto" também */
+  overflow: auto hidden;
   margin-top: 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -828,7 +829,14 @@ textarea {
   gap: 4px;
   margin: 16px 0 18px;
   border-bottom: 1px solid var(--line);
-  overflow-x: auto;
+
+  /* Regra pouco conhecida do CSS: overflow-x:auto sozinho faz o overflow-y
+     "visible" ser computado como auto também (spec CSS Overflow §overflow-y) —
+     na prática, qualquer sobra de 1px de altura faz o Chrome/Windows desenhar
+     a barra de rolagem clássica (com setinhas) do lado do menu de abas. Sem
+     relação nenhuma com o CSS ser antigo ou não: é uma pegadinha real da
+     especificação. Travar overflow-y evita isso em qualquer navegador/zoom. */
+  overflow: auto hidden;
 }
 
 .tab-btn {
