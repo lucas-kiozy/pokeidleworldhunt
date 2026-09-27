@@ -75,8 +75,6 @@ export function bindAddForm() {
       name: sp.n,
       species: sp.n,
       level: lv,
-      goal: lv + 10,
-      curXp: 0,
       q: q > 0 ? q : 1,
       ivt: 96,
       moves: null,

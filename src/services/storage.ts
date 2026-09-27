@@ -1,6 +1,5 @@
 /* Persistência do time/sessões/configurações (localStorage) — estado só neste navegador. */
 import { potByName, spOf, huntOf } from "../core/base";
-import { totalXp } from "../core/battle";
 
 export const LS_KEY = "piw-hunt-planner-v2",
   LS_OLD = "piw-hunt-planner-v1";
@@ -110,8 +109,6 @@ export function importOldInto(d: { o: any; team: any[] }) {
       name: m.name || sp.n,
       species: sp.n,
       level: +m.level || 1,
-      goal: +m.goal || +m.level + 1,
-      curXp: +m.curXp || 0,
       q: 1,
       g: 16,
       moves: null,
@@ -137,5 +134,3 @@ export function importOldInto(d: { o: any; team: any[] }) {
 export const active = () =>
   state.team.find((m: any) => m.id === state.activeId) || state.team[0] || null;
 export const monSessions = (m: any) => state.sessions.filter((s: any) => s.monId === m.id);
-export const needXp = (m: any) =>
-  Math.max(0, totalXp(m.goal || m.level + 1) - totalXp(m.level) - (+m.curXp || 0));

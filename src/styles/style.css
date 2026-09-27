@@ -113,8 +113,8 @@ h1 {
 }
 
 .mon-tab[aria-pressed="true"] {
-  border-color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink);
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
 }
 
 .mon-tab .lv {
@@ -187,6 +187,13 @@ h3 {
 label.f {
   display: block;
   font-size: 13px;
+  line-height: 1.3;
+
+  /* reserva altura de 2 linhas mesmo quando o texto cabe em 1 — assim uma
+     label mais comprida (ex.: "Tipo do Dia (+20% XP e loot nesse tipo)")
+     nunca empurra só a caixa dela pra baixo e desalinha com as vizinhas
+     da mesma linha do grid (.row2/.row3/.controls) */
+  min-height: 2.6em;
   color: var(--muted);
   margin: 10px 0 4px;
 }
@@ -332,7 +339,7 @@ details[open] summary::after {
 
 input[type="range"] {
   width: 100%;
-  accent-color: var(--red);
+  accent-color: var(--color-primary);
 }
 
 .scale {
@@ -628,7 +635,7 @@ td.rank {
 }
 
 .checks input {
-  accent-color: var(--red);
+  accent-color: var(--color-primary);
   width: 16px;
   height: 16px;
 }

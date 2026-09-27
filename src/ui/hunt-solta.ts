@@ -4,7 +4,7 @@ import { BUILTIN_HIDDEN } from "../core/constants";
 import { rankFor } from "../core/ranking";
 import { state, persist } from "../services/storage";
 import { qMon, setQMon, activeTab } from "./state";
-import { $, esc, nf, big, money, mult, dur, badge, TYPE_PT } from "./format";
+import { $, esc, nf, big, money, mult, badge, TYPE_PT, typesAlpha } from "./format";
 import { dropsTable, renderResults } from "./results";
 
 export function bindHuntSolta() {
@@ -43,8 +43,6 @@ export function bindHuntSolta() {
       id: "__q__",
       species: sp.n,
       level: lvl,
-      goal: lvl + 10,
-      curXp: 0,
       q: q > 0 ? q : 1,
       ivt,
       g: Math.min(32, Math.max(1, Math.round(ivt / 6))),
@@ -99,7 +97,6 @@ export function renderQRank() {
     <td>${nf.format(Math.round(r.kph))}</td>
     <td>${big(r.xph)}</td>
     <td class="${r.net >= 0 ? "pos" : "neg"}">${money(r.net)}</td>
-    <td>${dur(r.hours)}</td>
     <td>${esc(r.potUsed[0])}</td>
     <td>${nf.format(Math.round(r.P))}</td></tr>`,
     )
@@ -110,10 +107,12 @@ export function renderQControls() {
   ($("qHealThreshold") as HTMLSelectElement).value = st.healThreshold;
   ($("qDailyType") as HTMLSelectElement).innerHTML =
     '<option value="">Nenhum</option>' +
-    BASE.T.map(
-      (t: string) =>
-        `<option value="${t}"${st.dailyType === t ? " selected" : ""}>${TYPE_PT[t]}</option>`,
-    ).join("");
+    typesAlpha(BASE.T)
+      .map(
+        (t: string) =>
+          `<option value="${t}"${st.dailyType === t ? " selected" : ""}>${TYPE_PT[t]}</option>`,
+      )
+      .join("");
   const map: Record<string, string> = {
     w: "qw",
     trainerLv: "qTrainerLv",

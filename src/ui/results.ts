@@ -5,7 +5,20 @@ import { myMoves } from "../core/battle";
 import { rankFor, captureOf } from "../core/ranking";
 import { state, persist, active } from "../services/storage";
 import { adding, setBestName } from "./state";
-import { $, esc, nf, nf1, pct, big, money, mult, dur, badge, TYPE_PT, potOptions } from "./format";
+import {
+  $,
+  esc,
+  nf,
+  nf1,
+  pct,
+  big,
+  money,
+  mult,
+  badge,
+  TYPE_PT,
+  potOptions,
+  typesAlpha,
+} from "./format";
 import { renderCapture } from "./capture";
 import { renderSessions } from "./sessions";
 
@@ -43,10 +56,12 @@ export function bindControls() {
   }
   ($("dailyType") as HTMLSelectElement).innerHTML =
     '<option value="">Nenhum</option>' +
-    BASE.T.map(
-      (t: string) =>
-        `<option value="${t}"${st.dailyType === t ? " selected" : ""}>${TYPE_PT[t]}</option>`,
-    ).join("");
+    typesAlpha(BASE.T)
+      .map(
+        (t: string) =>
+          `<option value="${t}"${st.dailyType === t ? " selected" : ""}>${TYPE_PT[t]}</option>`,
+      )
+      .join("");
   $("dailyType").addEventListener("change", () => {
     st.dailyType = ($("dailyType") as HTMLSelectElement).value;
     persist();
@@ -120,7 +135,7 @@ export function renderResults() {
   $("pick").innerHTML = `<article class="pick" aria-label="Melhor rota">
     <div><div class="label">Melhor rota agora</div><div class="name">${esc(b.h.n)}</div>${b.h.t.map(badge).join("")} <span class="eff">nível ${b.h.l}</span>${tags(b)}</div>
     <div class="big">${big(b.xph)}<small>XP por hora</small></div>
-    <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span><span>Até o nível ${m.goal}: <b>${dur(b.hours)}</b></span><span>Ataque <b>${mult(b.oe)}</b> · recebe <b>${mult(b.de)}</b></span><span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b>${b.potInsuff ? ' <span class="tag x">nem essa é suficiente</span>' : ""}</span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${(() => {
+    <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span><span>Ataque <b>${mult(b.oe)}</b> · recebe <b>${mult(b.de)}</b></span><span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b>${b.potInsuff ? ' <span class="tag x">nem essa é suficiente</span>' : ""}</span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${(() => {
       const r = captureOf(b.h.val, +st.ballPrice, (st.capBoost ? 2 : 1) * (+st.capMult || 1));
       return r
         ? `<span>Captura: <b>${pct(r.c)}</b> por ${esc(st.ballName || "bola")} ($${nf.format(+st.ballPrice)})</span>`
@@ -143,7 +158,7 @@ export function renderResults() {
     <td>${nf.format(Math.round(r.kph))}</td>
     <td>${big(r.xph)}</td>
     <td class="${r.net >= 0 ? "pos" : "neg"}">${money(r.net)}</td>
-    <td>${dur(r.hours)}</td><td>${esc(r.potUsed[0])}</td><td>${nf.format(Math.round(r.P))}</td></tr>`,
+    <td>${esc(r.potUsed[0])}</td><td>${nf.format(Math.round(r.P))}</td></tr>`,
     )
     .join("");
   document.querySelectorAll("[data-hide]").forEach((b) =>

@@ -65,6 +65,10 @@ export const TYPE_PT: Record<string, string> = {
   STEEL: "Aço",
   FAIRY: "Fada",
 };
+// Usado em todo select que lista tipos (ex.: "Tipo do Dia") para exibi-los em
+// ordem alfabética (pelo nome em português), não na ordem interna do jogo.
+export const typesAlpha = (types: string[]) =>
+  [...types].sort((a, b) => TYPE_PT[a].localeCompare(TYPE_PT[b], "pt-BR"));
 // Cores dos badges de tipo seguem a paleta oficial do jogo Pokémon (não a paleta de marca do site,
 // que é para chrome/UI — ver memória "poke-idle-color-palette"), exceto Água/Gelo, que a própria
 // paleta do usuário define (--color-water-ice / #38BDF8). Hex literal aqui (não var()) porque

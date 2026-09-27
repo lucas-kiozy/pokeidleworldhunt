@@ -1,9 +1,9 @@
 /* ---------- painel do pokémon ativo ---------- */
 import { BASE, spOf } from "../core/base";
 import { statsOf, ivAvg, monStats, hasStats, inferIv, myMoves, combatHp } from "../core/battle";
-import { persist, active, needXp } from "../services/storage";
+import { persist, active } from "../services/storage";
 import { adding } from "./state";
-import { $, esc, nf, nf1, big, badge, TYPE_PT, TYPE_COLOR } from "./format";
+import { $, esc, nf, nf1, badge, TYPE_PT, TYPE_COLOR } from "./format";
 import { addForm, bindAddForm, removeMon } from "./team";
 import { renderTeam } from "./team";
 import { renderSessions } from "./sessions";
@@ -41,10 +41,6 @@ export function renderMon() {
       <input type="text" id="mName" value="${esc(m.name)}">
       <div class="row3">
         <div><label class="f" for="mLevel">Nível atual</label><input type="number" id="mLevel" min="1" value="${m.level}"></div>
-        <div><label class="f" for="mGoal">Nível meta</label><input type="number" id="mGoal" min="2" value="${m.goal}"></div>
-        <div><label class="f" for="mCur">XP no nível</label><input type="number" id="mCur" min="0" value="${m.curXp || 0}"></div>
-      </div>
-      <div class="row2">
         <div><label class="f" for="mQ">Qualidade</label><input type="number" id="mQ" min="0.8" max="5" step="0.01" value="${+m.q || 1}"></div>
         <div><label class="f" for="mG">IV total (6 a 192)</label><input type="number" id="mG" min="6" max="192" value="${m.ivt > 0 ? m.ivt : Math.round((+m.g || 16) * 6)}"></div>
       </div>
@@ -76,7 +72,7 @@ export function renderMon() {
       s2 = spOf(mm),
       S2 = monStats(mm, s2, mm.level);
     $("mHint").innerHTML =
-      `${s2.t.map(badge).join("")} nv ${mm.level} · HP em luta <b>${nf.format(combatHp(S2.hp, false))}</b>. Faltam <b>${big(needXp(mm))}</b> de XP para o nível ${mm.goal}.` +
+      `${s2.t.map(badge).join("")} nv ${mm.level} · HP em luta <b>${nf.format(combatHp(S2.hp, false))}</b>.` +
       (evo
         ? `<br>Evolui para <b>${esc(evo.n)}</b>${s2.evoL ? ` a partir do nível ${s2.evoL}` : ""}.`
         : "");
@@ -140,16 +136,8 @@ export function renderMon() {
     const v = Math.max(1, parseInt((e.target as HTMLInputElement).value) || 1);
     upd((mm) => {
       mm.level = v;
-      if (mm.goal <= v) mm.goal = v + 1;
     }, true);
   });
-  ($("mGoal") as HTMLInputElement).addEventListener("input", (e) => {
-    const v = parseInt((e.target as HTMLInputElement).value) || m.level + 1;
-    upd((mm) => (mm.goal = Math.max(v, mm.level + 1)));
-  });
-  ($("mCur") as HTMLInputElement).addEventListener("input", (e) =>
-    upd((mm) => (mm.curXp = Math.max(0, +(e.target as HTMLInputElement).value || 0))),
-  );
   ($("mQ") as HTMLInputElement).addEventListener("input", (e) => {
     const v = parseFloat((e.target as HTMLInputElement).value);
     if (v > 0) {

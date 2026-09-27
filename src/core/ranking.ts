@@ -1,6 +1,6 @@
 /* Calibração do time, ranking de hunts e captura. Sem DOM, sem storage (A-LAYER). */
 import { DEF, DANGER_HPS, VIP_XP, EVENT_XP2, DAILY_TYPE_BONUS, BUILTIN_HIDDEN } from "./constants";
-import { crowdInt, crowdAt, mapOf, fightOf, recommendPotion, lootPerKill, totalXp } from "./battle";
+import { crowdInt, crowdAt, mapOf, fightOf, recommendPotion, lootPerKill } from "./battle";
 
 /* calibração do time: tempo fixo e escala da luta são comuns a todos (validado com Venusaur e Golem);
    XP real/base e fator de poção são por pokémon, com o time como reserva */
@@ -115,10 +115,6 @@ export function rankFor(B: any, mon: any, team: any[], sessions: any[], st: any)
   const pot = B.POT.find((p: any) => p[0] === (mon.potion || st.potion)) || B.POT[3];
   const c = calibrateTeam(B, team, sessions),
     cm = calibFor(c, mon);
-  const need = Math.max(
-    0,
-    totalXp(mon.goal || mon.level + 1) - totalXp(mon.level) - (+mon.curXp || 0),
-  );
   const mine = sessions.filter((s) => s.monId === mon.id);
   const minL = 1,
     maxL = +st.trainerLv > 0 ? +st.trainerLv : Infinity;
@@ -188,7 +184,6 @@ export function rankFor(B: any, mon: any, team: any[], sessions: any[], st: any)
       potUsed,
       src,
       extrap,
-      hours: xph > 0 ? need / xph : Infinity,
     });
   }
   if (list.length) {
@@ -206,7 +201,7 @@ export function rankFor(B: any, mon: any, team: any[], sessions: any[], st: any)
       k === "xph" ? b.xph - a.xph : k === "net" ? b.net - a.net : b.score - a.score,
     );
   }
-  return { list, c, cm, need, sp, hidden, pot };
+  return { list, c, cm, sp, hidden, pot };
 }
 /* captura (regra do Discord oficial): cada arremesso é independente */
 export function captureOf(val: number, ballPrice: number, mult?: number) {
