@@ -15,10 +15,12 @@
 html {
   height: 100%;
   scroll-padding-top: env(safe-area-inset-top, 0);
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--ink);
   font: 15px/1.5 var(--body);
@@ -30,6 +32,24 @@ input,
 select {
   font: inherit;
   color: inherit;
+}
+
+/* A setinha nativa de input[type=number] some com o tema (fica clara/fora de
+   lugar em fundo escuro, e em alguns navegadores/zoom rende com a caixa
+   colapsada, deixando só a setinha "flutuando"). Sem ela, number e text
+   ficam com a mesma altura e aparência. */
+input[type="number"] {
+  appearance: textfield;
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Firefox mais antigo só entende o prefixado */
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari/Chrome mais antigos só entendem o prefixado */
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 :focus-visible {
@@ -194,6 +214,11 @@ select {
   gap: 10px;
 }
 
+.row2 > *,
+.row3 > * {
+  min-width: 0;
+}
+
 .row2 label.f,
 .row3 label.f {
   margin-top: 10px;
@@ -209,9 +234,10 @@ select {
 }
 
 .btn.primary {
-  background: var(--red);
-  border-color: var(--red);
-  color: var(--red-ink);
+  /* Amarelo Elétrico: "Destaques, CTAs, ícones e elementos interativos" na paleta da marca */
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-bg);
   font-weight: 600;
 }
 
@@ -296,6 +322,10 @@ details[open] summary::after {
   gap: 4px 12px;
 }
 
+.controls > * {
+  min-width: 0;
+}
+
 .slider-row {
   grid-column: 1 / -1;
 }
@@ -316,7 +346,9 @@ input[type="range"] {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 6px 18px;
-  border: 2px solid var(--red);
+
+  /* Azul Pokémon: é uma recomendação em destaque, não um alerta — vermelho fica só para avisos de verdade */
+  border: 2px solid var(--color-primary);
   border-radius: var(--radius-lg);
   padding: 16px 18px;
   margin: 16px 0 6px;
@@ -325,7 +357,7 @@ input[type="range"] {
 
 .pick .label {
   font-size: 13px;
-  color: var(--red);
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -739,7 +771,9 @@ textarea {
 
 .tab-btn[aria-pressed="true"] {
   color: var(--ink);
-  border-bottom-color: var(--red);
+
+  /* Azul Pokémon: "Header, navegação, botões principais" */
+  border-bottom-color: var(--color-primary);
 }
 
 .tab-btn:hover {
