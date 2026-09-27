@@ -133,7 +133,7 @@ export function renderResults() {
       ? '<span class="tag x" title="Nem a poção mais forte cura o golpe mais pesado do selvagem de uma vez">golpe mais forte que qualquer poção</span>'
       : "");
   $("pick").innerHTML = `<article class="pick" aria-label="Melhor rota">
-    <div><div class="label">Melhor rota agora</div><div class="name">${esc(b.h.n)}</div>${b.h.t.map(badge).join("")} <span class="eff">nível ${b.h.l}</span>${tags(b)}</div>
+    <div><div class="label">🏆 Melhor rota agora</div><div class="name">${esc(b.h.n)}</div>${b.h.t.map(badge).join("")} <span class="eff">nível ${b.h.l}</span>${tags(b)}</div>
     <div class="big">${big(b.xph)}<small>XP por hora</small></div>
     <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span><span>Ataque <b>${mult(b.oe)}</b> · recebe <b>${mult(b.de)}</b></span><span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b>${b.potInsuff ? ' <span class="tag x">nem essa é suficiente</span>' : ""}</span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${(() => {
       const r = captureOf(b.h.val, +st.ballPrice, (st.capBoost ? 2 : 1) * (+st.capMult || 1));

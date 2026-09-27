@@ -76,6 +76,26 @@ h1 {
   font: 700 clamp(26px, 4vw, 38px)/1.05 var(--head);
   margin: 0;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Bolinha de Pokébola (metade vermelha, metade clara, com o botão central) no
+   lugar de um marcador genérico de "painel administrativo" — mesma técnica
+   do h2::before, só maior aqui por ser o título da página. */
+h1::before {
+  content: "";
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--color-bg) 0 16%, var(--ink) 17% 27%, transparent 28%),
+    linear-gradient(to bottom, var(--color-accent) 0 46%, var(--ink) 46% 54%, var(--ink) 54% 100%);
+  box-shadow:
+    inset 0 0 0 2px rgb(0 0 0 / 35%),
+    0 2px 6px rgb(0 0 0 / 25%);
 }
 
 .sub {
@@ -180,17 +200,20 @@ h2 {
   gap: 9px;
 }
 
-/* marcador consistente antes de todo título de painel — mesma cor em todo
-   canto do site (Azul Pokémon = "navegação"/identidade), pra virar um sinal
-   reconhecível de "aqui começa uma seção", sem competir com o significado
-   das outras cores (amarelo = ação, vermelho = alerta, verde = sucesso) */
+/* Mini-pokébola consistente antes de todo título de painel: um sinal
+   reconhecível de "aqui começa uma seção" com cara de jogo, não só uma
+   bolinha genérica de admin. Azul na borda porque é o papel de "navegação"
+   da paleta; vermelho/claro por dentro porque é literalmente uma pokébola. */
 h2::before {
   content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-primary);
+  width: 13px;
+  height: 13px;
   flex: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--panel) 0 20%, var(--ink) 21% 32%, transparent 33%),
+    linear-gradient(to bottom, var(--color-accent) 0 46%, var(--ink) 46% 54%, var(--ink) 54% 100%);
+  box-shadow: inset 0 0 0 1.5px var(--color-primary);
 }
 
 h3 {
@@ -254,8 +277,12 @@ select {
 .btn {
   border: 1px solid var(--line);
   background: var(--panel2);
-  border-radius: var(--radius);
-  padding: 8px 14px;
+
+  /* pílula, não retângulo — os campos de formulário (inputs/select) que ficam
+     "quadrados"; botão sempre redondo cria um contraste claro de "isso aqui
+     você clica" e foge do visual de painel administrativo */
+  border-radius: 999px;
+  padding: 8px 16px;
   cursor: pointer;
   min-height: 38px;
 }
@@ -333,8 +360,10 @@ details[open] summary::after {
 
 .tb {
   display: inline-block;
-  border-radius: 5px;
-  padding: 1px 7px;
+
+  /* pílula em vez de retângulo — chip de tipo lembra um "sticker" de jogo, não uma tag de planilha */
+  border-radius: 999px;
+  padding: 1px 9px;
   font-size: 11.5px;
   font-weight: 600;
   line-height: 1.5;
@@ -413,12 +442,19 @@ input[type="range"]::-moz-range-thumb {
   grid-template-columns: 1fr auto;
   gap: 6px 18px;
 
-  /* Azul Pokémon: é uma recomendação em destaque, não um alerta — vermelho fica só para avisos de verdade */
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  margin: 16px 0 6px;
-  background: var(--panel);
+  /* Esta é a resposta que a tela inteira existe pra dar — por isso é o único
+     card com borda em degradê (azul->amarelo, as duas cores de "ação" da
+     paleta) e cantos mais arredondados que os painéis comuns (--radius-lg);
+     um card "importante" precisa parecer diferente dos outros, não só ter
+     borda de cor diferente. */
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background:
+    linear-gradient(var(--panel), var(--panel)) padding-box,
+    linear-gradient(120deg, var(--color-primary), var(--color-secondary)) border-box;
+  padding: 18px 20px;
+  margin: 18px 0 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
 }
 
 .pick .label {
@@ -528,8 +564,8 @@ td.rank {
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  border-radius: 4px;
-  padding: 0 6px;
+  border-radius: 999px;
+  padding: 0 8px;
   margin-left: 6px;
   vertical-align: 1px;
 }
