@@ -72,7 +72,7 @@ export const typesAlpha = (types: string[]) =>
 // Cores dos badges de tipo seguem a paleta oficial do jogo Pokémon (não a paleta de marca do site,
 // que é para chrome/UI — ver memória "poke-idle-color-palette"), exceto Água/Gelo, que a própria
 // paleta do usuário define (--color-water-ice / #38BDF8). Hex literal aqui (não var()) porque
-// textOn() abaixo precisa calcular a luminância a partir do valor real.
+// badgeColors() abaixo precisa calcular a luminância a partir do valor real.
 export const TYPE_COLOR: Record<string, string> = {
   NORMAL: "#A8A77A",
   FIRE: "#EE8130",
@@ -93,12 +93,50 @@ export const TYPE_COLOR: Record<string, string> = {
   STEEL: "#B7B7CE",
   FAIRY: "#D685AD",
 };
-function textOn(hex: string) {
+function srgbToLinear(c: number) {
+  const cs = c / 255;
+  return cs <= 0.04045 ? cs / 12.92 : Math.pow((cs + 0.055) / 1.055, 2.4);
+}
+function relLuminance(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16),
     g = parseInt(hex.slice(3, 5), 16),
     b = parseInt(hex.slice(5, 7), 16);
-  return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? "#1D2433" : "#FFFFFF";
+  return 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
+}
+function contrastRatio(l1: number, l2: number) {
+  const hi = Math.max(l1, l2),
+    lo = Math.min(l1, l2);
+  return (hi + 0.05) / (lo + 0.05);
+}
+function mixWithBlack(hex: string, amount: number) {
+  const r = parseInt(hex.slice(1, 3), 16),
+    g = parseInt(hex.slice(3, 5), 16),
+    b = parseInt(hex.slice(5, 7), 16);
+  const mix = (c: number) => Math.round(c * (1 - amount));
+  return (
+    "#" +
+    [r, g, b]
+      .map(mix)
+      .map((c) => c.toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
+/* Garante 4,5:1 (WCAG 2.2 AA) no texto de cada chip de tipo sem trocar a
+   cor "oficial" do tipo: escolhe texto claro ou escuro (o que der mais
+   contraste) e, se nem assim chegar a 4,5:1 — caso real medido com
+   axe-core: Psíquico deu só 3,14:1 com texto branco —, escurece o fundo em
+   passos pequenos até passar. Ver memória "poke-idle-color-palette". */
+function badgeColors(hex: string) {
+  const lum = relLuminance(hex);
+  const white = contrastRatio(1, lum),
+    dark = contrastRatio(relLuminance("#1D2433"), lum);
+  if (Math.max(white, dark) >= 4.5) return { bg: hex, fg: dark >= white ? "#1D2433" : "#FFFFFF" };
+  let bg = hex;
+  for (let i = 0; i < 12 && contrastRatio(1, relLuminance(bg)) < 4.5; i++)
+    bg = mixWithBlack(bg, 0.1);
+  return { bg, fg: "#FFFFFF" };
 }
 export function badge(t: string) {
-  return `<span class="tb" style="background:${TYPE_COLOR[t]};color:${textOn(TYPE_COLOR[t])}">${TYPE_PT[t]}</span>`;
+  const { bg, fg } = badgeColors(TYPE_COLOR[t]);
+  return `<span class="tb" style="background:${bg};color:${fg}">${TYPE_PT[t]}</span>`;
 }

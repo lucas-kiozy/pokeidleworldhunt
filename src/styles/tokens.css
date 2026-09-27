@@ -12,13 +12,20 @@
   --color-success: #22c55e; /* Verde — capturado, disponível, evolução */
   --color-water-ice: #38bdf8; /* Ciano — tipos Água/Gelo */
 
-  /* Papéis funcionais usados pelo layout legado, mapeados para a paleta acima */
+  /* Papéis funcionais usados pelo layout legado, mapeados para a paleta acima.
+     Escala de elevação (Material Design dark theme: superfícies ficam mais
+     CLARAS — não mais saturadas — à medida que "sobem" sobre o fundo; cores
+     saturadas ficam reservadas a elementos pequenos/interativos, nunca a
+     áreas grandes, porque cor saturada + pouca luminosidade cansa a vista e
+     lê como "murcha"). --panel é a superfície-base (cards); --panel2 é um
+     degrau mais claro por cima dela (inputs, linhas de tabela, chips). */
   --bg: var(--color-bg);
   --panel: var(--color-bg-alt);
-  --panel2: color-mix(in srgb, var(--color-bg-alt) 82%, var(--color-bg) 18%);
+  --panel2: color-mix(in srgb, var(--color-bg-alt) 95%, white 5%);
   --ink: var(--color-text);
   --muted: var(--color-text-muted);
   --line: color-mix(in srgb, var(--color-text-muted) 35%, var(--color-bg-alt) 65%);
+  --line-strong: color-mix(in srgb, var(--color-text-muted) 55%, var(--color-bg-alt) 45%);
 
   --red: var(--color-accent);
   --red-ink: var(--color-text);
@@ -26,6 +33,15 @@
   --good: var(--color-success);
   --bad: var(--color-accent);
   --warn: var(--color-secondary);
+
+  /* Versões clareadas das cores de marca, só para TEXTO sobre fundo escuro.
+     A cor "pura" (--color-primary, --color-accent) não passa em WCAG AA
+     (4.5:1) como texto sobre --panel — confirmado com auditoria automática
+     (axe-core): --color-primary puro deu 2,84:1. Clareando com branco o
+     texto continua lendo como "azul"/"vermelho", só fica legível. */
+  --color-primary-text: color-mix(in srgb, var(--color-primary) 55%, white 45%);
+  --color-accent-text: color-mix(in srgb, var(--color-accent) 55%, white 40%);
+  --color-success-text: color-mix(in srgb, var(--color-success) 70%, white 30%);
 
   --radius-lg: 14px;
   --radius: 8px;

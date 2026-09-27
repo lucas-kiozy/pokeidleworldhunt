@@ -161,16 +161,36 @@ h1 {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 20px;
+
+  /* sombra suave = a superfície "flutua" sobre o fundo em vez de se fundir
+     com ele — sinal de profundidade além da diferença de cor */
+  box-shadow: 0 1px 0 rgb(255 255 255 / 4%) inset;
 }
 
 .panel + .panel {
-  margin-top: 14px;
+  margin-top: 18px;
 }
 
 h2 {
   font: 600 19px/1.2 var(--head);
-  margin: 0 0 4px;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* marcador consistente antes de todo título de painel — mesma cor em todo
+   canto do site (Azul Pokémon = "navegação"/identidade), pra virar um sinal
+   reconhecível de "aqui começa uma seção", sem competir com o significado
+   das outras cores (amarelo = ação, vermelho = alerta, verde = sucesso) */
+h2::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex: none;
 }
 
 h3 {
@@ -337,9 +357,48 @@ details[open] summary::after {
   grid-column: 1 / -1;
 }
 
+/* Trilha em degradê azul->amarelo: a cor passa a CODIFICAR o que o controle
+   faz (de "Só XP" a "Só dinheiro"), em vez de ser só decoração — o mesmo
+   princípio de mapear cor a um dado contínuo usado em qualquer gráfico. */
 input[type="range"] {
   width: 100%;
-  accent-color: var(--color-primary);
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari mais antigo só entende o prefixado */
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 3px solid var(--color-primary);
+  border-radius: 50%;
+  background: var(--color-text);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--color-primary);
+  border-radius: 50%;
+  background: var(--color-text);
+  cursor: pointer;
 }
 
 .scale {
@@ -364,7 +423,7 @@ input[type="range"] {
 
 .pick .label {
   font-size: 13px;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 600;
 }
 
@@ -455,11 +514,13 @@ td.rank {
 }
 
 .pos {
-  color: var(--good);
+  color: var(--color-success-text);
 }
 
 .neg {
-  color: var(--bad);
+  /* vermelho puro não passa em 4.5:1 sobre --panel (2,84:1 medido) — versão
+     clareada só pra texto, ver tokens.css */
+  color: var(--color-accent-text);
 }
 
 .tag {
@@ -472,19 +533,24 @@ td.rank {
   vertical-align: 1px;
 }
 
+/* .tag.m/.x/.d viraram chips com fundo sólido (não translúcido): assim o
+   contraste do texto não depende do que está por baixo (linha da tabela,
+   card etc.) — a versão translúcida antiga media só 2,8~3,3:1 conforme o
+   fundo, abaixo do mínimo de 4,5:1 do WCAG 2.2 AA (confirmado com axe-core) */
 .tag.m {
-  background: color-mix(in srgb, var(--teal) 18%, transparent);
-  color: var(--teal);
+  background: var(--teal);
+  color: var(--color-bg);
 }
 
 .tag.x {
-  background: color-mix(in srgb, var(--warn) 18%, transparent);
-  color: var(--warn);
+  background: var(--warn);
+  color: var(--color-bg);
 }
 
 .tag.d {
-  background: color-mix(in srgb, var(--bad) 15%, transparent);
-  color: var(--bad);
+  /* --bad puro + texto branco só chega a 3,84:1 — um pouco mais escuro fecha o 4,5:1 exigido */
+  background: color-mix(in srgb, var(--bad) 82%, rgb(0 0 0) 18%);
+  color: var(--color-text);
 }
 
 .eff {
@@ -635,7 +701,8 @@ td.rank {
 }
 
 .checks input {
-  accent-color: var(--color-primary);
+  /* verde: marcar aqui liga um bônus (VIP, evento, mapas extras) — "disponível/vantagem" na paleta */
+  accent-color: var(--color-success);
   width: 16px;
   height: 16px;
 }
