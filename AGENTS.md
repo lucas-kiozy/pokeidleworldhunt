@@ -56,7 +56,7 @@ Resultado: 8 papéis → 6 agentes, cada um com um único critério de aceite (S
 | G4 | **Ferramenta antes de LLM.** O que `tsc`, ESLint, Stylelint, Prettier, Vitest ou `npm audit` verificam não é reavaliado por LLM; os auditores leem a saída das ferramentas. |
 | G5 | **Saída estruturada.** Toda comunicação entre agentes é JSON conforme §1.4. Prosa apenas na comunicação do 00 com o usuário. |
 | G6 | **Escopo fechado.** Nada é criado, refatorado ou "melhorado" fora do blueprint. Sugestões vão para `notes` e não são implementadas. |
-| G7 | **Instalação só com aprovação.** Nenhum `npm install`, `pip install`, `npx` que baixe pacotes ou download de binários ocorre sem confirmação explícita do usuário, obtida pelo 00. A aprovação vale para aquele pacote e versão, naquela tarefa. |
+| G7 | **Instalação só com aprovação.** Nenhum `npm install`, `pip install`, `npx` que baixe pacotes ou download de binários ocorre sem confirmação explícita do usuário, obtida pelo 00. A aprovação vale para aquele pacote e versão, naquela tarefa. **Exceção permanente (concedida em 2026-09-26, ver memória "poke-idle-test-tooling-permission"):** ferramentas de *teste automatizado* (ex.: Playwright e o navegador que ele baixa) podem ser instaladas pelo 03 sem aprovação a cada vez, desde que a instalação fique inteiramente dentro da pasta do projeto (`C:\Users\Ana Leticia\Lucas\Pokeidle World Hunter\`) — nunca em `C:\Users\Ana Leticia\Lucas\` fora dela, nem em qualquer outro lugar do computador do usuário. Dependências de *produção* (o que entra no bundle do site) continuam exigindo aprovação normalmente. |
 | G8 | **Ordem do prompt.** Ficha do agente (prefixo estável e cacheável) → dados de entrada → instrução da tarefa ao final. Informação crítica nunca fica no meio de um contexto longo¹. |
 | G9 | **Idioma.** Artefatos e comentários de código em pt-BR; identificadores de código em inglês. |
 | G10 | **Orçamento de saída (alvo).** `blueprint.json` ≤ 400 tokens · `design_spec.json` ≤ 600 · `exec_report.json` ≤ 300 · ≤ 80 tokens por finding · resumo ao usuário ≤ 10 linhas. |
@@ -606,7 +606,7 @@ Cobertos exclusivamente por ferramenta (não auditados por LLM, G4): formataçã
 - Checklist fechado com IDs: sem análise livre; `minor` não gera ciclo.
 
 #### Política de Instalação de Dependências
-Não se aplica. Não instala; na ausência do Playwright usa o método estático e pode registrar a recomendação em `notes` — a decisão é do usuário, via 00.
+Não se aplica. Não instala; na ausência do Playwright usa o método estático e pode registrar a recomendação em `notes`. Instalar o Playwright cai na exceção do G7 (ferramenta de teste, dentro da pasta do projeto): o 00 pode mandar o 03 instalar direto, sem perguntar ao usuário a cada vez.
 
 ---
 
@@ -854,7 +854,7 @@ Nada foi instalado ou inicializado. Sequência proposta:
 | 3 | Dependências de desenvolvimento | `npm install -D vite typescript vitest eslint @eslint/js typescript-eslint eslint-plugin-no-unsanitized stylelint stylelint-config-standard prettier` | **Instalação — exige aprovação (G7)** |
 | 4 | Configurações | `tsconfig.json` (`strict`, `noEmit`, `moduleResolution: "bundler"`, `lib: ["ES2022", "DOM", "DOM.Iterable"]`, `include: ["src"]`); `eslint.config.js` (ver abaixo); `.stylelintrc.json` (`stylelint-config-standard` + `color-no-hex` e `color-named: "never"`, liberados em `tokens.css`); `.prettierrc.json`; `.gitattributes`; `.gitignore` | Local (03) |
 | 5 | Migração da base HTML | Primeira tarefa do pipeline (`type: "migration"`): estrutura → `index.html`; estilos → `tokens.css` + `style.css`; scripts inline e handlers `on*=` → módulos em `src/` | Pipeline 01 → 05 |
-| 6 | *(Opcional)* Auditoria de layout automatizada | `npm install -D @playwright/test` + `npx playwright install chromium` | **Instalação + download de navegador — exige aprovação (G7)** |
+| 6 | *(Opcional)* Auditoria de layout automatizada e testes reais de UI | `npm install -D @playwright/test` + `npx playwright install chromium` | **Instalação + download de navegador — cai na exceção do G7: liberado sem aprovação a cada vez, contanto que fique dentro da pasta do projeto** |
 
 Regras obrigatórias no `eslint.config.js`:
 - Global: `@typescript-eslint/no-explicit-any`, `@typescript-eslint/ban-ts-comment` (com descrição obrigatória), `no-eval`, `no-implied-eval`, `no-new-func`, `no-unsanitized/method`, `no-unsanitized/property`.
