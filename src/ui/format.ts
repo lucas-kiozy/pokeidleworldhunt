@@ -39,6 +39,30 @@ export function esc(s: unknown) {
 }
 export const mult = (x: number) => "×" + nf2.format(x);
 
+// Teto de escala das barras de ataque/recebe: amp() amplifica o multiplicador
+// bruto de tipo até uma dupla vantagem (raw 4 -> ~5,5), então 6 cobre o pior
+// caso real sem esmagar as diferenças mais comuns (0 a ~2,5) numa faixa curta.
+const MATCHUP_MAX = 6;
+export function matchup(oe: number, de: number) {
+  const w = (v: number) => Math.max(4, Math.min(100, (v / MATCHUP_MAX) * 100));
+  return `<div class="matchup">
+    <div class="matchup-row atk"><span class="lbl">Ataque</span><span class="track"><span class="fill" data-w="${w(oe)}"></span></span><b>${mult(oe)}</b></div>
+    <div class="matchup-row def"><span class="lbl">Recebe</span><span class="track"><span class="fill" data-w="${w(de)}"></span></span><b>${mult(de)}</b></div>
+  </div>`;
+}
+// Duplo rAF: garante que o navegador pinte a barra em width:0 antes de
+// aplicar o valor final, senão a transição de CSS não tem "de onde" animar.
+export function animateMatchups() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll<HTMLElement>(".matchup .fill[data-w]").forEach((el) => {
+      const w = el.dataset.w!;
+      requestAnimationFrame(() => {
+        el.style.width = w + "%";
+      });
+    });
+  });
+}
+
 export const potOptions = (sel: string) =>
   BASE.POT.map(
     (p: any) =>

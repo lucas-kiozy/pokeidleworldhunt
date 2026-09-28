@@ -14,36 +14,28 @@
     <link rel="stylesheet" href="/src/styles/style.css" />
   </head>
   <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <h1 class="brand">
+          <img class="brand-icon" src="/favicon.png" alt="" />Planejador de hunt
+        </h1>
+        <nav class="apptabs" id="apptabs" aria-label="Seções do app">
+          <button type="button" class="tab-btn" data-tab="hunt" aria-pressed="true">
+            Hunt solta
+          </button>
+          <button type="button" class="tab-btn" data-tab="time" aria-pressed="false">Time</button>
+          <button type="button" class="tab-btn" data-tab="captura" aria-pressed="false">
+            Captura
+          </button>
+          <button type="button" class="tab-btn" data-tab="guia" aria-pressed="false">Guia</button>
+        </nav>
+      </div>
+    </header>
     <div class="wrap">
-      <header class="top">
-        <div>
-          <h1><img class="brand-icon" src="/favicon.png" alt="" />Planejador de hunt</h1>
-          <p class="sub">
-            Escolha um pokémon do seu time e veja quais hunts rendem mais XP por hora sem afundar
-            seu saldo. As estimativas se ajustam às sessões do Hunt Analyzer que você registrar.
-          </p>
-        </div>
-        <div class="src">
-          Base do jogo (<a
-            href="https://poke.idleworld.online/pokepedia"
-            target="_blank"
-            rel="noopener"
-            >Pokepedia</a
-          >): <span id="baseInfo"></span> ·
-          <span id="saveStatus" class="status">salvo neste navegador</span>
-        </div>
-      </header>
-
-      <nav class="apptabs" id="apptabs" aria-label="Seções do app">
-        <button type="button" class="tab-btn" data-tab="hunt" aria-pressed="true">
-          Hunt solta
-        </button>
-        <button type="button" class="tab-btn" data-tab="time" aria-pressed="false">Time</button>
-        <button type="button" class="tab-btn" data-tab="captura" aria-pressed="false">
-          Captura
-        </button>
-        <button type="button" class="tab-btn" data-tab="guia" aria-pressed="false">Guia</button>
-      </nav>
+      <p class="sub">
+        Escolha um pokémon do seu time e veja quais hunts rendem mais XP por hora sem afundar seu
+        saldo. As estimativas se ajustam às sessões do Hunt Analyzer que você registrar.
+      </p>
 
       <section id="tabpanel-time" class="tabpanel" hidden>
         <nav class="team" id="team" aria-label="Seu time" hidden></nav>
@@ -342,6 +334,16 @@
           </details>
         </div>
       </section>
+
+      <p class="src">
+        Base do jogo (<a
+          href="https://poke.idleworld.online/pokepedia"
+          target="_blank"
+          rel="noopener"
+          >Pokepedia</a
+        >): <span id="baseInfo"></span> ·
+        <span id="saveStatus" class="status">salvo neste navegador</span>
+      </p>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

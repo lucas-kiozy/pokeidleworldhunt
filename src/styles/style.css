@@ -25,6 +25,9 @@ body {
   color: var(--ink);
   font: 15px/1.5 var(--body);
   font-variant-numeric: tabular-nums;
+
+  /* espaço reservado pra .topbar (position:fixed), senão o conteúdo nasce por baixo dela */
+  padding-top: 64px;
 }
 
 button,
@@ -66,43 +69,63 @@ input[type="number"]::-webkit-outer-spin-button {
   padding: 20px 16px 48px;
 }
 
-header.top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
+/* Barra superior fixa: pedido explícito do usuário — o menu de abas não pode
+   mais rolar "no meio da página" junto com o conteúdo, e tem que ficar
+   sempre visível no topo, como um menu de site de verdade. */
+.topbar {
+  /* fixed, não sticky: sticky para de funcionar com qualquer ancestral que
+     defina overflow-x (o próprio body define, pra nunca aparecer rolagem
+     horizontal na página) — vira scroll container e quebra o "sempre
+     visível". Fixed não depende disso. */
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 20;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line-strong);
+  box-shadow: 0 2px 10px rgb(23 37 84 / 18%);
 }
 
-h1 {
-  font: 700 clamp(26px, 4vw, 38px)/1.05 var(--head);
+.topbar-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand {
+  font: 700 19px/1 var(--head);
   margin: 0;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  flex: none;
 }
 
 /* Ícone oficial do site (mesma arte do favicon) ao lado do título — pedido
    explícito do usuário, no lugar do marcador desenhado em CSS. */
 .brand-icon {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   flex: none;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
 }
 
 .sub {
   color: var(--muted);
-  margin: 6px 0 0;
+  margin: 20px 0 0;
   max-width: 62ch;
 }
 
+/* Nota de proveniência dos dados — foi tirada do cabeçalho (não precisa
+   disputar espaço com o título) e vira uma linha discreta no fim da página. */
 .src {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
+  margin: 28px 0 0;
 }
 
 .src a {
@@ -186,10 +209,10 @@ h1 {
   border-radius: var(--radius-lg);
   padding: 20px;
 
-  /* card branco "flutuando" sobre o fundo creme — sombra suave por baixo em
-     vez do destaque interno usado no tema escuro anterior (branco em branco
-     não aparecia mais) */
-  box-shadow: 0 2px 10px rgb(30 41 59 / 6%);
+  /* card azul profundo "flutuando" sobre a página clara — sombra bem mais
+     forte que a da página em volta, porque agora tem contraste de tom real
+     pra sombra aparecer nele */
+  box-shadow: 0 6px 20px rgb(23 37 84 / 22%);
 }
 
 .panel + .panel {
@@ -448,6 +471,9 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: -6px;
   border: 3px solid var(--color-primary);
   border-radius: 50%;
+
+  /* branco fixo (não var(--panel), que agora é escuro): o polegar precisa
+     continuar destacando sobre a trilha azul->amarelo dentro do card escuro */
   background: var(--color-bg-alt);
   cursor: pointer;
 }
@@ -530,6 +556,60 @@ input[type="range"]::-moz-range-thumb {
 
 .pick .facts b {
   font-weight: 700;
+}
+
+/* Barra animada de ataque/recebe — visualiza a vantagem de tipo (antes só
+   texto "×2,5 · recebe ×0") como duas barrinhas que crescem ao entrar na
+   tela, na única resposta que a tela inteira existe pra dar. */
+.matchup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 190px;
+}
+
+.matchup-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.matchup-row .lbl {
+  flex: none;
+  width: 46px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.matchup-row .track {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--panel2);
+  overflow: hidden;
+}
+
+.matchup-row .fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.matchup-row.atk .fill {
+  background: var(--color-success);
+}
+
+.matchup-row.def .fill {
+  background: var(--color-accent);
+}
+
+.matchup-row b {
+  flex: none;
+  width: 38px;
+  text-align: right;
+  font-size: 13px;
 }
 
 @media (width <= 520px) {
@@ -915,8 +995,8 @@ textarea {
 .apptabs {
   display: flex;
   gap: 4px;
-  margin: 16px 0 18px;
-  border-bottom: 1px solid var(--line);
+  flex: 1;
+  min-width: 0;
 
   /* Regra pouco conhecida do CSS: overflow-x:auto sozinho faz o overflow-y
      "visible" ser computado como auto também (spec CSS Overflow §overflow-y) —
@@ -930,12 +1010,11 @@ textarea {
 .tab-btn {
   background: none;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 14px;
   font: 600 14px var(--head);
   color: var(--muted);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
   white-space: nowrap;
   transition:
     color 150ms ease,
@@ -945,8 +1024,10 @@ textarea {
 .tab-btn[aria-pressed="true"] {
   color: var(--ink);
 
-  /* Azul Pokémon: "Header, navegação, botões principais" */
-  border-bottom-color: var(--color-primary);
+  /* Amarelo Elétrico ("destaques, CTAs") — pop maior contra o card escuro da
+     topbar do que o azul primário, que tem menos contraste com o próprio
+     fundo azul do card */
+  border-bottom-color: var(--color-secondary);
 }
 
 .tab-btn:hover {

@@ -4,7 +4,19 @@ import { BUILTIN_HIDDEN } from "../core/constants";
 import { rankFor } from "../core/ranking";
 import { state, persist } from "../services/storage";
 import { qMon, setQMon, activeTab } from "./state";
-import { $, esc, nf, big, money, mult, badge, TYPE_PT, typesAlpha } from "./format";
+import {
+  $,
+  esc,
+  nf,
+  big,
+  money,
+  mult,
+  matchup,
+  animateMatchups,
+  badge,
+  TYPE_PT,
+  typesAlpha,
+} from "./format";
 import { dropsTable, renderResults } from "./results";
 
 export function bindHuntSolta() {
@@ -82,9 +94,10 @@ export function renderQRank() {
   $("qPick").innerHTML = `<article class="pick" aria-label="Melhor rota">
     <div><div class="label">🏆 Melhor rota</div><div class="name">${esc(b.h.n)}</div>${b.h.t.map(badge).join("")} <span class="eff">nível ${b.h.l}</span>${tags(b)}</div>
     <div class="big">${big(b.xph)}<small>XP por hora</small></div>
-    <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span><span>Ataque <b>${mult(b.oe)}</b> · recebe <b>${mult(b.de)}</b></span><span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b></span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${b.worst ? `<span>Golpe mais forte do selvagem: <b>${esc(b.worst.n)}</b> (${TYPE_PT[b.worst.t]}, ${mult(b.worst.e)})</span>` : `<span>O selvagem não tem golpe de dano na base</span>`}</div>
+    <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span>${matchup(b.oe, b.de)}<span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b></span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${b.worst ? `<span>Golpe mais forte do selvagem: <b>${esc(b.worst.n)}</b> (${TYPE_PT[b.worst.t]}, ${mult(b.worst.e)})</span>` : `<span>O selvagem não tem golpe de dano na base</span>`}</div>
     <details class="dropsbox"><summary>Drops de ${esc(b.h.n)}</summary>${b.h.loot.length ? dropsTable(b.h, 1, st.stones !== false) : `<p class="empty">Sem drops na base.</p>`}</details>
   </article>`;
+  animateMatchups();
   $("qRows").innerHTML = list
     .slice(0, 40)
     .map(

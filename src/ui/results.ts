@@ -14,6 +14,8 @@ import {
   big,
   money,
   mult,
+  matchup,
+  animateMatchups,
   badge,
   TYPE_PT,
   potOptions,
@@ -135,7 +137,7 @@ export function renderResults() {
   $("pick").innerHTML = `<article class="pick" aria-label="Melhor rota">
     <div><div class="label">🏆 Melhor rota agora</div><div class="name">${esc(b.h.n)}</div>${b.h.t.map(badge).join("")} <span class="eff">nível ${b.h.l}</span>${tags(b)}</div>
     <div class="big">${big(b.xph)}<small>XP por hora</small></div>
-    <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span><span>Ataque <b>${mult(b.oe)}</b> · recebe <b>${mult(b.de)}</b></span><span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b>${b.potInsuff ? ' <span class="tag x">nem essa é suficiente</span>' : ""}</span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${(() => {
+    <div class="facts"><span>Saldo <b class="${b.net >= 0 ? "pos" : "neg"}">${money(b.net)}/h</b></span>${matchup(b.oe, b.de)}<span><b>${nf.format(Math.round(b.kph))}</b> kills/h</span><span>Poção recomendada: <b>${esc(b.potUsed[0])}</b>${b.potInsuff ? ' <span class="tag x">nem essa é suficiente</span>' : ""}</span><span>~<b>${nf.format(Math.round(b.P))}</b> poções/h</span>${(() => {
       const r = captureOf(b.h.val, +st.ballPrice, (st.capBoost ? 2 : 1) * (+st.capMult || 1));
       return r
         ? `<span>Captura: <b>${pct(r.c)}</b> por ${esc(st.ballName || "bola")} ($${nf.format(+st.ballPrice)})</span>`
@@ -144,6 +146,7 @@ export function renderResults() {
     <div class="actions" style="grid-column:1/-1;margin-top:0"><button class="btn small ghost" data-hide="${esc(b.h.n)}">Não achei essa hunt no mapa</button></div>
     <details class="dropsbox"><summary>Drops de ${esc(b.h.n)}</summary>${b.h.loot.length ? dropsTable(b.h, 1, st.stones !== false) : `<p class="empty">Sem drops na base.</p>`}</details>
   </article>`;
+  animateMatchups();
   setBestName(b.h.n);
   renderCapture();
   $("rows").innerHTML = list
