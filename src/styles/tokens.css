@@ -1,62 +1,68 @@
 /* Design tokens — paleta oficial do Poke Idle World Hunter.
-   Ver memória "poke-idle-color-palette": não trocar sem pedido explícito do usuário. */
+   Ver memória "poke-idle-color-palette": a PALETA (estas 9 cores/papéis) não
+   muda sem pedido explícito; a identidade visual (como ela é aplicada) pode. */
 :root {
   /* Paleta de marca (fonte da verdade) */
   --color-primary: #2563eb; /* Azul Pokémon — header, navegação, botões principais */
   --color-secondary: #ffd21f; /* Amarelo Elétrico — destaques, CTAs, ícones */
   --color-accent: #ef3340; /* Vermelho Poké Ball — ações importantes, badges, alertas */
-
-  /* Pedido explícito do usuário (2026-09-27): o "Azul-noite" original (#101827) era
-     escuro demais na prática — trocado por um tom bem mais claro na mesma família,
-     mantendo a identidade azulada sem pesar tanto. --color-bg-alt subiu junto pra
-     manter a mesma distância relativa entre fundo e cards. */
-  --color-bg: #1e293b; /* Fundo geral do site */
-  --color-bg-alt: #2a3b5c; /* Cards, seções, menus */
-  --color-text: #f8fafc; /* Branco — títulos e textos importantes */
-
-  /* Levemente mais claro que o "cinza azulado" original: com o fundo mais claro
-     pedido pelo usuário, o tom anterior (#94a3b8) caiu pra 4,35:1 — abaixo do
-     4,5:1 do WCAG AA (medido com axe-core). */
-  --color-text-muted: color-mix(in srgb, #94a3b8 80%, white 20%);
   --color-success: #22c55e; /* Verde — capturado, disponível, evolução */
   --color-water-ice: #38bdf8; /* Ciano — tipos Água/Gelo */
 
+  /* Pedido explícito do usuário (2026-09-27): tema claro, não escuro — nem o
+     "Azul-noite" original (#101827) nem a variação intermediária (#1e293b).
+     Fundo em bege/creme bem claro (a sugestão foi "branco, amarelo pastel,
+     bege ou algo parecido"); cards em branco puro por cima, mais claros que
+     o fundo — no claro, elevação sobe para o branco, o oposto do escuro. */
+  --color-bg: #faf5ea; /* creme claro — fundo geral do site */
+  --color-bg-alt: #fff; /* branco — cards, seções, menus */
+
+  /* Texto escuro sobre fundo claro — reaproveita o tom do antigo fundo escuro
+     como tinta, mantendo a família azulada mesmo com o tema invertido. */
+  --color-text: #1e293b;
+  --color-text-muted: color-mix(in srgb, #64748b 88%, black 12%);
+
   /* Papéis funcionais usados pelo layout legado, mapeados para a paleta acima.
-     Escala de elevação (Material Design dark theme: superfícies ficam mais
-     CLARAS — não mais saturadas — à medida que "sobem" sobre o fundo; cores
-     saturadas ficam reservadas a elementos pequenos/interativos, nunca a
-     áreas grandes, porque cor saturada + pouca luminosidade cansa a vista e
-     lê como "murcha"). --panel é a superfície-base (cards); --panel2 é um
-     degrau mais claro por cima dela (inputs, linhas de tabela, chips). */
+     Escala de elevação (Material Design light theme, invertido do dark theme
+     usado antes): superfícies ficam mais CLARAS com a elevação — cards
+     brancos "flutuam" sobre o fundo creme; inputs/linhas de tabela ficam um
+     tantinho mais recuados que o card (não brancos puros), pra não sumir. */
   --bg: var(--color-bg);
   --panel: var(--color-bg-alt);
-  --panel2: color-mix(in srgb, var(--color-bg-alt) 95%, white 5%);
+  --panel2: color-mix(in srgb, var(--color-bg-alt) 92%, var(--color-bg) 8%);
   --ink: var(--color-text);
   --muted: var(--color-text-muted);
-  --line: color-mix(in srgb, var(--color-text-muted) 35%, var(--color-bg-alt) 65%);
-  --line-strong: color-mix(in srgb, var(--color-text-muted) 55%, var(--color-bg-alt) 45%);
+  --line: color-mix(in srgb, var(--color-text-muted) 28%, var(--color-bg-alt) 72%);
+  --line-strong: color-mix(in srgb, var(--color-text-muted) 50%, var(--color-bg-alt) 50%);
 
-  --red: var(--color-accent);
+  /* Cores puras da marca só como PREENCHIMENTO (fundo de botão/badge/borda) —
+     nunca como texto direto: nenhuma delas, sozinha, chega a 4,5:1 sobre um
+     fundo claro (confirmado com axe-core; o ciano e o amarelo nem chegam
+     perto). --bad/--teal/--good/--warn abaixo são as versões seguras pra
+     texto; use var(--color-accent) etc. diretamente só em fundo sólido. */
+  --color-primary-text: var(
+    --color-primary
+  ); /* já passa em 4,5:1 sobre branco, não precisa escurecer */
+  --color-accent-text: color-mix(in srgb, var(--color-accent) 80%, black 20%);
+  --color-success-text: color-mix(in srgb, var(--color-success) 62%, black 38%);
+  --color-water-ice-text: color-mix(in srgb, var(--color-water-ice) 52%, black 48%);
+  --color-secondary-text: color-mix(in srgb, var(--color-secondary) 55%, black 45%);
+
+  --red: var(--color-accent-text);
   --red-ink: var(--color-text);
-  --teal: var(--color-water-ice);
-  --good: var(--color-success);
-  --bad: var(--color-accent);
-  --warn: var(--color-secondary);
+  --teal: var(--color-water-ice-text);
+  --good: var(--color-success-text);
+  --bad: var(--color-accent-text);
+  --warn: var(--color-secondary-text);
 
-  /* Versões clareadas das cores de marca, só para TEXTO sobre fundo escuro.
-     A cor "pura" (--color-primary, --color-accent) não passa em WCAG AA
-     (4.5:1) como texto sobre --panel — confirmado com auditoria automática
-     (axe-core): --color-primary puro deu 2,84:1. Clareando com branco o
-     texto continua lendo como "azul"/"vermelho", só fica legível. */
-  --color-primary-text: color-mix(in srgb, var(--color-primary) 55%, white 45%);
-  --color-accent-text: color-mix(in srgb, var(--color-accent) 48%, white 52%);
-  --color-success-text: color-mix(in srgb, var(--color-success) 70%, white 30%);
+  /* Cores fixas da pokébola (h1/h2), independentes do tema: pokébola é
+     sempre vermelha/branca/preta, então não usam --ink/--panel (que mudam
+     de sentido se o tema for invertido de novo no futuro). */
+  --color-ball-light: #fff;
+  --color-ball-dark: #1d2433;
 
   --radius-lg: 14px;
   --radius: 8px;
   --head: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
   --body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
-
-/* Tema desta paleta é escuro por natureza — mantido fixo por padrão.
-   Se quiser alternância clara/escura no futuro, é uma decisão de design a confirmar. */

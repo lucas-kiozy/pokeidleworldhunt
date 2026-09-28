@@ -53,7 +53,10 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--teal);
+  /* cor pura (não a versão escurecida --teal): contorno de foco é contraste
+     de COMPONENTE de UI (mínimo 3:1), não de texto (4,5:1) — o ciano vivo
+     também chama mais atenção pra indicar onde está o foco do teclado */
+  outline: 2px solid var(--color-water-ice);
   outline-offset: 2px;
 }
 
@@ -81,21 +84,14 @@ h1 {
   gap: 14px;
 }
 
-/* Bolinha de Pokébola (metade vermelha, metade clara, com o botão central) no
-   lugar de um marcador genérico de "painel administrativo" — mesma técnica
-   do h2::before, só maior aqui por ser o título da página. */
-h1::before {
-  content: "";
-  width: 30px;
-  height: 30px;
+/* Ícone oficial do site (mesma arte do favicon) ao lado do título — pedido
+   explícito do usuário, no lugar do marcador desenhado em CSS. */
+.brand-icon {
+  width: 40px;
+  height: 40px;
   flex: none;
   border-radius: 50%;
-  background:
-    radial-gradient(circle, var(--color-bg) 0 16%, var(--ink) 17% 27%, transparent 28%),
-    linear-gradient(to bottom, var(--color-accent) 0 46%, var(--ink) 46% 54%, var(--ink) 54% 100%);
-  box-shadow:
-    inset 0 0 0 2px rgb(0 0 0 / 35%),
-    0 2px 6px rgb(0 0 0 / 25%);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
 }
 
 .sub {
@@ -130,6 +126,13 @@ h1::before {
   border-radius: 999px;
   padding: 6px 14px 6px 8px;
   cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    transform 100ms ease;
+}
+
+.mon-tab:hover {
+  transform: translateY(-1px);
 }
 
 .mon-tab[aria-pressed="true"] {
@@ -183,9 +186,10 @@ h1::before {
   border-radius: var(--radius-lg);
   padding: 20px;
 
-  /* sombra suave = a superfície "flutua" sobre o fundo em vez de se fundir
-     com ele — sinal de profundidade além da diferença de cor */
-  box-shadow: 0 1px 0 rgb(255 255 255 / 4%) inset;
+  /* card branco "flutuando" sobre o fundo creme — sombra suave por baixo em
+     vez do destaque interno usado no tema escuro anterior (branco em branco
+     não aparecia mais) */
+  box-shadow: 0 2px 10px rgb(30 41 59 / 6%);
 }
 
 .panel + .panel {
@@ -210,9 +214,22 @@ h2::before {
   height: 13px;
   flex: none;
   border-radius: 50%;
+
+  /* cores fixas (--color-ball-*), não --ink/--panel: uma pokébola é sempre
+     vermelha/branca/preta, independente do tema estar claro ou escuro */
   background:
-    radial-gradient(circle, var(--panel) 0 20%, var(--ink) 21% 32%, transparent 33%),
-    linear-gradient(to bottom, var(--color-accent) 0 46%, var(--ink) 46% 54%, var(--ink) 54% 100%);
+    radial-gradient(
+      circle,
+      var(--color-ball-light) 0 20%,
+      var(--color-ball-dark) 21% 32%,
+      transparent 33%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--color-accent) 0 46%,
+      var(--color-ball-dark) 46% 54%,
+      var(--color-ball-light) 54% 100%
+    );
   box-shadow: inset 0 0 0 1.5px var(--color-primary);
 }
 
@@ -285,13 +302,33 @@ select {
   padding: 8px 16px;
   cursor: pointer;
   min-height: 38px;
+  transition:
+    transform 100ms ease,
+    box-shadow 150ms ease,
+    filter 150ms ease;
+}
+
+/* levanta ao passar o mouse e "afunda" ao clicar — um botão sem nenhum
+   feedback de toque é a marca registrada de painel administrativo sem vida */
+.btn:hover {
+  filter: brightness(97%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgb(30 41 59 / 12%);
+}
+
+.btn:active {
+  transform: translateY(0);
+  filter: brightness(94%);
+  box-shadow: none;
 }
 
 .btn.primary {
-  /* Amarelo Elétrico: "Destaques, CTAs, ícones e elementos interativos" na paleta da marca */
+  /* Amarelo Elétrico: "Destaques, CTAs, ícones e elementos interativos" na paleta da marca.
+     Texto em tinta escura (--color-text), não var(--color-bg) — amarelo precisa de
+     texto escuro pra contraste em QUALQUER tema, claro ou escuro. */
   background: var(--color-secondary);
   border-color: var(--color-secondary);
-  color: var(--color-bg);
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -411,7 +448,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: -6px;
   border: 3px solid var(--color-primary);
   border-radius: 50%;
-  background: var(--color-text);
+  background: var(--color-bg-alt);
   cursor: pointer;
 }
 
@@ -426,7 +463,7 @@ input[type="range"]::-moz-range-thumb {
   height: 18px;
   border: 3px solid var(--color-primary);
   border-radius: 50%;
-  background: var(--color-text);
+  background: var(--color-bg-alt);
   cursor: pointer;
 }
 
@@ -545,6 +582,17 @@ tbody tr:last-child td {
   border-bottom: none;
 }
 
+/* realce de linha ao passar o mouse — ajuda a acompanhar uma linha numa
+   tabela de 10 colunas sem perder onde estava (comum em tabelas de dados
+   interativas, aqui não tínhamos nenhum feedback de hover) */
+tbody tr {
+  transition: background-color 120ms ease;
+}
+
+tbody tr:hover td {
+  background: var(--panel2);
+}
+
 td.rank {
   color: var(--muted);
   width: 34px;
@@ -574,20 +622,24 @@ td.rank {
    contraste do texto não depende do que está por baixo (linha da tabela,
    card etc.) — a versão translúcida antiga media só 2,8~3,3:1 conforme o
    fundo, abaixo do mínimo de 4,5:1 do WCAG 2.2 AA (confirmado com axe-core) */
+
+/* Preenchimento sólido com a cor pura da marca (não --teal/--warn/--bad, que
+   agora são as versões escurecidas pra TEXTO) — o chip fica vivo, e o texto
+   em cima é escolhido pelo que realmente contrasta com aquele fundo. */
 .tag.m {
-  background: var(--teal);
-  color: var(--color-bg);
+  background: var(--color-water-ice);
+  color: var(--color-text);
 }
 
 .tag.x {
-  background: var(--warn);
-  color: var(--color-bg);
+  background: var(--color-secondary);
+  color: var(--color-text);
 }
 
 .tag.d {
-  /* --bad puro + texto branco só chega a 3,84:1 — um pouco mais escuro fecha o 4,5:1 exigido */
-  background: color-mix(in srgb, var(--bad) 82%, rgb(0 0 0) 18%);
-  color: var(--color-text);
+  /* --color-accent puro + texto branco só chega a 4,02:1 — um pouco mais escuro fecha o 4,5:1 */
+  background: color-mix(in srgb, var(--color-accent) 85%, rgb(0 0 0) 15%);
+  color: rgb(255 255 255);
 }
 
 .eff {
@@ -850,9 +902,9 @@ textarea {
 }
 
 .mon-tab-x:hover {
-  color: var(--ink);
-  background: var(--bad);
-  border-color: var(--bad);
+  color: rgb(255 255 255);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .stats input::placeholder {
@@ -885,6 +937,9 @@ textarea {
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   white-space: nowrap;
+  transition:
+    color 150ms ease,
+    border-bottom-color 150ms ease;
 }
 
 .tab-btn[aria-pressed="true"] {
